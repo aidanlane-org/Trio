@@ -68,8 +68,10 @@ extension Treatments {
         /// What oref says is still needed on top of scheduled basal, discounted by the user's
         /// Recommended Bolus Percentage and capped at Max Bolus. Never `smbToDeliver`, which oref
         /// pairs with a compensating low temp that is not enacted here.
+        /// Open loop only: whenever Trio may enact, the loop already acts on this requirement
+        /// (SMB or high temp from the same determination), so showing it would invite a double dose.
         var algorithmSuggestedBolus: Decimal {
-            guard insulinRequired > 0 else { return 0 }
+            guard dosingMode.automation == .off, insulinRequired > 0 else { return 0 }
             return min(insulinRequired * fraction, maxBolus)
         }
 
